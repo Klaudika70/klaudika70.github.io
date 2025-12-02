@@ -1,345 +1,581 @@
 <!DOCTYPE html>
 <html lang="sk">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Denník spánku</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-html, body {
-    height: 100%;
-    margin: 0;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Denník spánku</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Lato:wght@300;400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-    font-family: 'Lato', sans-serif;
-    
-    /* Gradient overlay + image */
-    background: 
-        linear-gradient(
-            rgba(25, 35, 60, 0.85),
-            rgba(45, 55, 80, 0.85)
-        ),
-        url('./bg.jpeg');
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
 
-    background-size: cover;         /* scales image to cover entire viewport */
-    background-position: center;    /* centers the image */
-    background-repeat: no-repeat;   /* prevents tiling */
-    background-attachment: fixed;   /* optional: parallax effect */
-    
-    min-height: 100vh;              /* ensures full viewport height */
-    padding: 40px 20px;             /* page padding */
-    color: #333;
-}
+    .sleep-background {
+      position: relative;
+      background:
+        linear-gradient(135deg,
+          rgba(20, 30, 60, 0.92),
+          rgba(40, 50, 85, 0.88),
+          rgba(25, 35, 70, 0.90)),
+        url('./background.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: #f0f0f0;
+      overflow: hidden;
+    }
 
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 50px 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    /* Floating bubbles container */
+    .sleep-background::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-        h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.8em;
-            font-weight: 300;
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+    /* Individual bubble styles */
+    .bubble {
+      position: fixed;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.15),
+          rgba(200, 220, 255, 0.08),
+          rgba(150, 180, 255, 0.03));
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.1),
+        0 0 30px rgba(150, 180, 255, 0.15);
+      pointer-events: none;
+      animation: float-up linear infinite;
+      z-index: 1;
+    }
 
-        .subtitle {
-            text-align: center;
-            color: #e0e0e0;
-            font-size: 0.95em;
-            margin-bottom: 40px;
-            font-style: italic;
-        }
+    /* Bubble size variations */
+    .bubble.small {
+      width: 40px;
+      height: 40px;
+    }
 
-        .question {
-            margin-bottom: 35px;
-        }
+    .bubble.medium {
+      width: 80px;
+      height: 80px;
+    }
 
-        .question-label {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3em;
-            font-weight: 500;
-            color: #ffffff;
-            margin-bottom: 15px;
-            display: block;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
+    .bubble.large {
+      width: 120px;
+      height: 120px;
+      opacity: 0.6;
+    }
 
-        .emoji-rating {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-            padding: 20px 10px;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
+    /* Floating animation */
+    @keyframes float-up {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+      }
 
-        .emoji-option {
-            cursor: pointer;
-            font-size: 2.5em;
-            transition: transform 0.2s, filter 0.2s;
-            user-select: none;
-        }
+      10% {
+        opacity: 0.6;
+        transform: translateY(90vh) translateX(10px) scale(1);
+      }
 
-        .emoji-option:hover {
-            transform: scale(1.2);
-        }
+      90% {
+        opacity: 0.6;
+      }
 
-        .emoji-option.selected {
-            transform: scale(1.3);
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        }
+      100% {
+        transform: translateY(-120px) translateX(-10px) scale(0.8);
+        opacity: 0;
+      }
+    }
 
-        textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-family: 'Lato', sans-serif;
-            font-size: 1em;
-            color: #2c3e50;
-            resize: vertical;
-            transition: border-color 0.3s;
-            background: #fafbfc;
-        }
+    /* Dreamy glow overlay */
+    .sleep-background::after {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center,
+          rgba(100, 150, 255, 0.08) 0%,
+          transparent 50%);
+      animation: pulse-glow 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        textarea:focus {
-            outline: none;
-            border-color: #3498db;
-            background: #fff;
-        }
+    @keyframes pulse-glow {
 
-        .small-textarea {
-            min-height: 80px;
-        }
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
 
-        .large-textarea {
-            min-height: 150px;
-        }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+      }
+    }
 
-        .save-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.2em;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            letter-spacing: 1px;
-        }
+    /* Ensure content appears above effects */
+    .sleep-background>* {
+      position: relative;
+      z-index: 2;
+    }
 
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
+    body {
+      font-family: 'Lato', sans-serif;
 
-        .save-btn:active {
-            transform: translateY(0);
-        }
+      background:
+        linear-gradient(rgba(25, 35, 60, 0.85),
+          rgba(45, 55, 80, 0.85)),
+        url('./background.jpeg');
+      background-size: cover;
+      /* scales image to cover entire viewport */
+      background-position: center;
+      /* centers the image */
+      background-repeat: no-repeat;
+      /* prevents tiling */
+      background-attachment: fixed;
+      /* optional: parallax effect */
 
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #ddd, transparent);
-            margin: 40px 0;
-        }
-    </style>
+      min-height: 100vh;
+      /* ensures full viewport height */
+      color: #333;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+
+      /* Background image */
+      background-image: url('./background.jpeg');
+      background-size: cover;
+      /* makes image cover the container */
+      background-position: center;
+      /* centers the image */
+      background-repeat: no-repeat;
+      /* prevents tiling */
+
+      /* Glass effect overlay */
+      background-color: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px);
+
+      padding: 50px 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8em;
+      font-weight: 300;
+      text-align: center;
+      color: #ffffff;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.0em;
+      font-weight: 300;
+      text-align: center;
+      color: #bc9afc;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #e0e0e0;
+      font-size: 0.95em;
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+
+    .question {
+      margin-bottom: 35px;
+    }
+
+    .question-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3em;
+      font-weight: 500;
+      color: #ffffff;
+      margin-bottom: 15px;
+      display: block;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .emoji-rating {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 15px;
+      padding: 20px 10px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+
+    .emoji-option {
+      cursor: pointer;
+      font-size: 2.5em;
+      transition: transform 0.2s, filter 0.2s;
+      user-select: none;
+    }
+
+    .emoji-option:hover {
+      transform: scale(1.2);
+    }
+
+    .emoji-option.selected {
+      transform: scale(1.3);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'Lato', sans-serif;
+      font-size: 1em;
+      color: #2c3e50;
+      resize: vertical;
+      transition: border-color 0.3s;
+      background: #ebebeb;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      background: #fff;
+    }
+
+    .small-textarea {
+      min-height: 80px;
+      margin-bottom: 10px;
+    }
+
+    .large-textarea {
+      min-height: 150px;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 1px;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .save-btn:active {
+      transform: translateY(0);
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #ddd, transparent);
+      margin: 40px 0;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="sleep-background">
+    <!-- Add multiple bubbles -->
+    <div class="bubble small" style="left: 10%; animation-duration: 15s; animation-delay: 0s;"></div>
+    <div class="bubble medium" style="left: 25%; animation-duration: 20s; animation-delay: 2s;"></div>
+    <div class="bubble large" style="left: 50%; animation-duration: 25s; animation-delay: 4s;"></div>
+    <div class="bubble small" style="left: 70%; animation-duration: 18s; animation-delay: 1s;"></div>
+    <div class="bubble medium" style="left: 85%; animation-duration: 22s; animation-delay: 3s;"></div>
+
     <div class="container">
-        <h1>Denník spánku</h1>
-        <p class="subtitle">Záznam mojej cesty k lepšiemu spánku</p>
+      <h1>Denník spánku</h1>
+      <p class="subtitle">Záznam mojej cesty k lepšiemu spánku</p>
 
-        <form id="sleepJournal">
-            <div class="question">
-                <label class="question-label">1. Ako hodnotím kvalitu môjho spánku</label>
-                <div class="emoji-rating" id="sleepQuality">
-                    <span class="emoji-option" data-value="5">😊</span>
-                    <span class="emoji-option" data-value="4">🙂</span>
-                    <span class="emoji-option" data-value="3">😐</span>
-                    <span class="emoji-option" data-value="2">😕</span>
-                    <span class="emoji-option" data-value="1">😞</span>
-                </div>
-                <textarea class="small-textarea" placeholder="Vlastné poznámky..."></textarea>
-            </div>
+      <form id="sleepJournal">
+        <div class="question">
+          <label class="question-label">1. Ako hodnotím kvalitu môjho spánku</label>
+          <div class="emoji-rating" id="sleepQuality">
+            <span class="emoji-option" data-value="5">😍</span>
+            <span class="emoji-option" data-value="4">😊</span>
+            <span class="emoji-option" data-value="3">🙂</span>
+            <span class="emoji-option" data-value="2">😐</span>
+            <span class="emoji-option" data-value="1">😴</span>
+          </div>
+          <textarea class="small-textarea" placeholder="Vlastné poznámky..."></textarea>
+        </div>
 
-            <div class="divider"></div>
+        <div class="divider"></div>
 
-            <div class="question">
-                <label class="question-label">2. Môj mini-rituál pre lepší spánok</label>
-                <textarea class="large-textarea" placeholder="Opíšte váš večerný rituál..."></textarea>
-            </div>
+        <div class="question">
+          <label class="question-label">2. Môj mini-rituál pre lepší spánok</label>
+          <textarea class="small-textarea mb-3" placeholder="Telo..."></textarea>
+          <textarea class="small-textarea mb-3" placeholder="Myseľ..."></textarea>
+          <textarea class="small-textarea mb-3" placeholder="Čo odstránim..."></textarea>
+        </div>
 
-            <div class="divider"></div>
+        <div class="divider"></div>
 
-            <div class="question">
-                <label class="question-label">3. Môj „Ak–potom" plán</label>
-                <textarea class="large-textarea" placeholder="Ak..., potom..."></textarea>
-            </div>
+        <h2>Uvoľni svoj zmysel</h2>
+        <div class="question">
+          <label class="question-label">3. Aký bol môj dnešný deň</label>
+          <textarea class="large-textarea" placeholder="Veľmi stresujúci"></textarea>
+        </div>
 
-            <div class="divider"></div>
+        <div class="divider"></div>
 
-            <div class="question">
-                <label class="question-label">4. ...</label>
-                <textarea class="large-textarea" placeholder="Vaše poznámky..."></textarea>
-            </div>
+        <div class="question">
+          <label class="question-label">4. Dnes mi v hlave zostáva</label>
+          <textarea class="large-textarea" placeholder="Veľmi veľa práce na zajtra"></textarea>
+        </div>
 
-            <div class="divider"></div>
+        <div class="divider"></div>
 
-            <div class="question">
-                <label class="question-label">4. ...</label>
-                <textarea class="large-textarea" placeholder="Vaše poznámky..."></textarea>
-            </div>
+        <div class="question">
+          <label class="question-label">5. Čo môžem odložiť na zajtra</label>
+          <textarea class="large-textarea" placeholder="To čo odkadám už mesiac"></textarea>
+        </div>
 
-            <button type="submit" class="save-btn">Uložiť záznam</button>
-        </form>
+        <div class="divider"></div>
+
+        <div class="question">
+          <label class="question-label">6. Dnešná vďačnosť</label>
+          <textarea class="large-textarea"
+            placeholder="Našiel som si chvílku pre seba aj pri množstve povinností"></textarea>
+        </div>
+
+        <div class="divider"></div>
+
+        <button type="submit" class="save-btn">Uložiť záznam</button>
+      </form>
     </div>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        // Emoji rating functionality
-        const emojiOptions = document.querySelectorAll('.emoji-option');
-        let selectedRating = null;
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Emoji rating functionality
+    const emojiOptions = document.querySelectorAll('.emoji-option');
+    let selectedRating = null;
 
-        emojiOptions.forEach(emoji => {
-            emoji.addEventListener('click', function() {
-                emojiOptions.forEach(e => e.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedRating = this.getAttribute('data-value');
-            });
-        });
+    emojiOptions.forEach(emoji => {
+      emoji.addEventListener('click', function () {
+        emojiOptions.forEach(e => e.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedRating = this.getAttribute('data-value');
+      });
+    });
 
-        // Form submission and PDF generation
-        document.getElementById('sleepJournal').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Get form values
-            const textareas = document.querySelectorAll('textarea');
-            const notes1 = textareas[0].value;
-            const ritual = textareas[1].value;
-            const plan = textareas[2].value;
-            const question4 = textareas[3].value;
-            
-            // Get emoji rating text
-            const emojiMap = {
-                '5': '😊 Výborný',
-                '4': '🙂 Dobrý',
-                '3': '😐 Priemerný',
-                '2': '😕 Slabý',
-                '1': '😞 Zlý'
-            };
-            const ratingText = selectedRating ? emojiMap[selectedRating] : 'Nehodnotené';
-            
-            // PDF styling
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.text("Denník spánku", 105, 20, { align: "center" });
-            
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(10);
-            doc.text("Záznam mojej cesty k lepšiemu spánku", 105, 28, { align: "center" });
-            
-            // Current date
-            const today = new Date().toLocaleDateString('sk-SK');
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text(`Dátum: ${today}`, 20, 40);
-            
-            let yPos = 50;
-            
-            // Question 1
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.text("1. Ako hodnotím kvalitu môjho spánku", 20, yPos);
-            yPos += 8;
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Hodnotenie: ${ratingText}`, 20, yPos);
-            yPos += 6;
-            
-            if (notes1) {
-                const splitNotes1 = doc.splitTextToSize(`Poznámky: ${notes1}`, 170);
-                doc.text(splitNotes1, 20, yPos);
-                yPos += splitNotes1.length * 5 + 5;
-            }
-            yPos += 5;
-            
-            // Question 2
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.text("2. Môj mini-rituál pre lepší spánok", 20, yPos);
-            yPos += 8;
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            if (ritual) {
-                const splitRitual = doc.splitTextToSize(ritual, 170);
-                doc.text(splitRitual, 20, yPos);
-                yPos += splitRitual.length * 5 + 5;
-            } else {
-                doc.text("(nevyplnené)", 20, yPos);
-                yPos += 10;
-            }
-            
-            // Question 3
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.text("3. Môj Ak–potom plán", 20, yPos);
-            yPos += 8;
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            if (plan) {
-                const splitPlan = doc.splitTextToSize(plan, 170);
-                doc.text(splitPlan, 20, yPos);
-                yPos += splitPlan.length * 5 + 5;
-            } else {
-                doc.text("(nevyplnené)", 20, yPos);
-                yPos += 10;
-            }
-            
-            // Question 4
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.text("4. ...", 20, yPos);
-            yPos += 8;
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            if (question4) {
-                const splitQ4 = doc.splitTextToSize(question4, 170);
-                doc.text(splitQ4, 20, yPos);
-            } else {
-                doc.text("(nevyplnené)", 20, yPos);
-            }
-            
-            // Save PDF
-            doc.save(`Dennik_spanku_${today.replace(/\./g, '-')}.pdf`);
-        });
-    </script>
+    // Form submission and PDF generation
+    document.getElementById('sleepJournal').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const {jsPDF} = window.jspdf;
+      const doc = new jsPDF();
+
+      // Get form values
+      const textareas = document.querySelectorAll('textarea');
+      const notes1 = textareas[0].value;
+
+      const question2_1 = textareas[1].value;
+      const question2_2 = textareas[2].value;
+      const question2_3 = textareas[3].value;
+
+      const question3 = textareas[4].value;
+      const question4 = textareas[5].value;
+      const question5 = textareas[6].value;
+      const question6 = textareas[7].value;
+
+      // Get emoji rating text
+      const emojiMap = {
+        '5': 'Výborný',
+        '4': 'Dobrý',
+        '3': 'Priemerný',
+        '2': 'Slabý',
+        '1': 'Zlý'
+      };
+      const ratingText = selectedRating ? emojiMap[selectedRating] : 'Nehodnotené';
+
+      // PDF styling
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.text("Denník spánku", 105, 20, {align: "center"});
+
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(10);
+      doc.text("Záznam mojej cesty k lepšiemu spánku", 105, 28, {align: "center"});
+
+      // Current date
+      const today = new Date().toLocaleDateString('sk-SK');
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(`Dátum: ${today}`, 20, 40);
+
+      let yPos = 50;
+
+      // Question 1
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("1. Ako hodnotím kvalitu môjho spánku", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`Hodnotenie: ${ratingText}`, 20, yPos);
+      yPos += 6;
+
+      if (notes1) {
+        const splitNotes1 = doc.splitTextToSize(`Poznámky: ${notes1}`, 170);
+        doc.text(splitNotes1, 20, yPos);
+        yPos += splitNotes1.length * 5 + 5;
+      }
+      yPos += 5;
+
+      // Question 2
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("2. Môj mini-rituál pre lepší spánok", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      if (question2_1) {
+        const splitRitual = doc.splitTextToSize(question2_1, 170);
+        doc.text("Telo: " + splitRitual, 20, yPos);
+        yPos += splitRitual.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      if (question2_2) {
+        const splitRitual = doc.splitTextToSize(question2_2, 170);
+        doc.text("Myseľ: " + splitRitual, 20, yPos);
+        yPos += splitRitual.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      if (question2_3) {
+        const splitRitual = doc.splitTextToSize(question2_3, 170);
+        doc.text("Čo odstránim: " + splitRitual, 20, yPos);
+        yPos += splitRitual.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      // Question 3
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("3. Aký bol môj dnešný deň", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      if (question3) {
+        const splitPlan = doc.splitTextToSize(question3, 170);
+        doc.text(splitPlan, 20, yPos);
+        yPos += splitPlan.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      // Question 4
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("4. Dnes mi v hlave zostáva", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      if (question4) {
+        const splitPlan = doc.splitTextToSize(question4, 170);
+        doc.text(splitPlan, 20, yPos);
+        yPos += splitPlan.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      // Question 5
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("5. Čo môžem odložiť na zajtra", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      if (question5) {
+        const splitPlan = doc.splitTextToSize(question5, 170);
+        doc.text(splitPlan, 20, yPos);
+        yPos += splitPlan.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      // Question 6
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("6. Dnešná vďačnosť", 20, yPos);
+      yPos += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      if (question6) {
+        const splitPlan = doc.splitTextToSize(question6, 170);
+        doc.text(splitPlan, 20, yPos);
+        yPos += splitPlan.length * 5 + 5;
+      } else {
+        doc.text("(nevyplnené)", 20, yPos);
+        yPos += 10;
+      }
+
+      // Save PDF
+      doc.save(`Dennik_spanku_${today.replace(/\./g, '-')}.pdf`);
+    });
+  </script>
 </body>
+
 </html>
