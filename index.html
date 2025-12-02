@@ -15,27 +15,145 @@ html, body {
     height: 100%;
     margin: 0;
 }
+.sleep-background {
+  position: relative;
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(20, 30, 60, 0.92),
+      rgba(40, 50, 85, 0.88),
+      rgba(25, 35, 70, 0.90)
+    ),
+    url('./background.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #f0f0f0;
+  overflow: hidden;
+}
+
+/* Floating bubbles container */
+.sleep-background::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Individual bubble styles */
+.bubble {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.15),
+    rgba(200, 220, 255, 0.08),
+    rgba(150, 180, 255, 0.03)
+  );
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 0 20px rgba(255, 255, 255, 0.1),
+    0 0 30px rgba(150, 180, 255, 0.15);
+  pointer-events: none;
+  animation: float-up linear infinite;
+  z-index: 1;
+}
+
+/* Bubble size variations */
+.bubble.small { 
+  width: 40px; 
+  height: 40px; 
+}
+
+.bubble.medium { 
+  width: 80px; 
+  height: 80px; 
+}
+
+.bubble.large { 
+  width: 120px; 
+  height: 120px; 
+  opacity: 0.6;
+}
+
+/* Floating animation */
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+    transform: translateY(90vh) translateX(10px) scale(1);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-120px) translateX(-10px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Dreamy glow overlay */
+.sleep-background::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(100, 150, 255, 0.08) 0%,
+    transparent 50%
+  );
+  animation: pulse-glow 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+/* Ensure content appears above effects */
+.sleep-background > * {
+  position: relative;
+  z-index: 2;
+}
 
 body {
     font-family: 'Lato', sans-serif;
     
-    /* Gradient overlay + image */
-    background: 
-        linear-gradient(
-            rgba(25, 35, 60, 0.85),
-            rgba(45, 55, 80, 0.85)
-        ),
-        url('./bg.jpeg');
+        background: 
+          linear-gradient(
+              rgba(25, 35, 60, 0.85),
+              rgba(45, 55, 80, 0.85)
+          ),
+        url('./background.jpeg');
+          background-size: cover;         /* scales image to cover entire viewport */
+          background-position: center;    /* centers the image */
+          background-repeat: no-repeat;   /* prevents tiling */
+          background-attachment: fixed;   /* optional: parallax effect */
 
-    background-size: cover;         /* scales image to cover entire viewport */
-    background-position: center;    /* centers the image */
-    background-repeat: no-repeat;   /* prevents tiling */
-    background-attachment: fixed;   /* optional: parallax effect */
-    
-    min-height: 100vh;              /* ensures full viewport height */
-    padding: 40px 20px;             /* page padding */
-    color: #333;
-}
+          min-height: 100vh;              /* ensures full viewport height */
+          color: #333;
+        }
 
         .container {
             max-width: 700px;
@@ -54,6 +172,17 @@ body {
             font-weight: 300;
             text-align: center;
             color: #ffffff;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.0em;
+            font-weight: 300;
+            text-align: center;
+            color: #bc9afc;
             margin-bottom: 15px;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
@@ -116,7 +245,7 @@ body {
             color: #2c3e50;
             resize: vertical;
             transition: border-color 0.3s;
-            background: #fafbfc;
+            background: #ebebeb;
         }
 
         textarea:focus {
@@ -166,19 +295,28 @@ body {
     </style>
 </head>
 <body>
+<div class="sleep-background">
+  <!-- Add multiple bubbles -->
+  <div class="bubble small" style="left: 10%; animation-duration: 15s; animation-delay: 0s;"></div>
+  <div class="bubble medium" style="left: 25%; animation-duration: 20s; animation-delay: 2s;"></div>
+  <div class="bubble large" style="left: 50%; animation-duration: 25s; animation-delay: 4s;"></div>
+  <div class="bubble small" style="left: 70%; animation-duration: 18s; animation-delay: 1s;"></div>
+  <div class="bubble medium" style="left: 85%; animation-duration: 22s; animation-delay: 3s;"></div>
+  
     <div class="container">
         <h1>Denník spánku</h1>
         <p class="subtitle">Záznam mojej cesty k lepšiemu spánku</p>
 
+        <h2>Sekcia 1</h2>
         <form id="sleepJournal">
             <div class="question">
                 <label class="question-label">1. Ako hodnotím kvalitu môjho spánku</label>
                 <div class="emoji-rating" id="sleepQuality">
-                    <span class="emoji-option" data-value="5">😊</span>
-                    <span class="emoji-option" data-value="4">🙂</span>
-                    <span class="emoji-option" data-value="3">😐</span>
-                    <span class="emoji-option" data-value="2">😕</span>
-                    <span class="emoji-option" data-value="1">😞</span>
+                      <span class="emoji-option" data-value="5">😍</span>
+                      <span class="emoji-option" data-value="4">😊</span>
+                      <span class="emoji-option" data-value="3">🙂</span>
+                      <span class="emoji-option" data-value="2">😐</span>
+                      <span class="emoji-option" data-value="1">😴</span>
                 </div>
                 <textarea class="small-textarea" placeholder="Vlastné poznámky..."></textarea>
             </div>
@@ -192,6 +330,7 @@ body {
 
             <div class="divider"></div>
 
+        <h2>Sekcia 1</h2>
             <div class="question">
                 <label class="question-label">3. Môj „Ak–potom" plán</label>
                 <textarea class="large-textarea" placeholder="Ak..., potom..."></textarea>
@@ -213,6 +352,7 @@ body {
 
             <button type="submit" class="save-btn">Uložiť záznam</button>
         </form>
+    </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
